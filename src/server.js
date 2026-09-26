@@ -11,30 +11,6 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//// Local DB
-// mongoose.connect("mongodb://localhost:27017/Silly", {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// });
-
-//// Remote DB
-mongoose.connect(
-  "mongodb+srv://dario-admin:" +
-    process.env.DB_PASS +
-    "@cluster0-bhjc9.mongodb.net/sillyStories",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
-
-//// DB conection test
-// var db = mongoose.connection;
-// db.on("error", console.error.bind(console, "connection error:"));
-// db.once("open", function () {
-//   console.log("db connected");
-// });
-
 const messageSchema = new mongoose.Schema({
   id: Number,
   text: "String",
@@ -55,63 +31,80 @@ const fullStoriesSchema = new mongoose.Schema({
 
 const Story = mongoose.model("Story", fullStoriesSchema);
 
-app.get("/", function (req, res) {
-  const newest = Sentence.findOne().sort({ _id: -1 });
+app.get("/", async function (req, res, next) {
+  try {
+    const newest = Sentence.findOne().sort({ _id: -1 });
+    const results = await Sentence.find({});
 
-  Sentence.find({}, function (err, results) {
-    if (!err) {
-      if (results.length === 0) {
-        res.render("fullstory");
-      } else if (results.length === 20) {
-        Story.find({}, function (err, record) {
-          err
-            ? console.log(err)
-            : story.createNewStory(record, results, Story, Sentence, res);
-        });
-      } else {
-        newest.exec((err, data) => {
-          const newestDoc = data.text;
-          sLeft = 20 - data.id;
-          res.render("index", { toRender: newestDoc, sencentesLeft: sLeft });
-        });
-      }
+    if (results.length === 0) {
+      res.render("fullstory");
+    } else if (results.length === 20) {
+      const record = await Story.find({});
+      await story.createNewStory(record, results, Story, Sentence, res);
+    } else {
+      const data = await newest.exec();
+      const newestDoc = data.text;
+      const sLeft = 20 - data.id;
+      res.render("index", { toRender: newestDoc, sencentesLeft: sLeft });
     }
-  });
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.get("/stories", function (req, res) {
-  Story.find().exec(function (err, recordedStories) {
-    err
-      ? console.log(err)
-      : res.render("stories", { stories: recordedStories });
-  });
+app.get("/stories", async function (req, res, next) {
+  try {
+    const recordedStories = await Story.find().exec();
+    res.render("stories", { stories: recordedStories });
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.post("/", function (req, res) {
+app.post("/", async function (req, res, next) {
   const message = req.body.message;
   const eMail = req.body.email;
   const fName = req.body.fName;
-  console.log(eMail);
 
-  Sentence.find({}, function (err, results) {
-    if (!err) {
-      const newMessage = new Sentence({
-        id: results.length + 1,
-        text: message,
-        name: fName,
-        email: eMail,
-      });
+  try {
+    const results = await Sentence.find({});
+    const newMessage = new Sentence({
+      id: results.length + 1,
+      text: message,
+      name: fName,
+      email: eMail,
+    });
 
-      newMessage.save(function (err) {});
-    }
+    await newMessage.save();
     res.redirect("/");
-  });
+  } catch (error) {
+    next(error);
+  }
 });
 
-let port = process.env.PORT;
-if (port == null || port == "") {
-  port = 3000;
-}
-app.listen(port, function () {
-  console.log("Server has started, port 3000");
+app.use(function (error, req, res, next) {
+  console.error(error);
+  res.status(500).send("Something went wrong.");
 });
+
+async function start() {
+  if (!process.env.MONGODB_URI) {
+    console.error("MONGODB_URI is required.");
+    process.exitCode = 1;
+    return;
+  }
+
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+
+    const port = process.env.PORT || 3000;
+    app.listen(port, function () {
+      console.log(`Server has started, port ${port}`);
+    });
+  } catch (error) {
+    console.error("Failed to connect to MongoDB:", error);
+    process.exitCode = 1;
+  }
+}
+
+start();
