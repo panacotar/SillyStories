@@ -7,6 +7,9 @@ const mongoose = require("mongoose");
 
 const story = require("./modules/create_story.js");
 
+const MONGODB_CONNECTION_TIMEOUT_MS =
+  process.env.NODE_ENV === "production" ? 30_000 : 3_000;
+
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -37,7 +40,7 @@ app.get("/", async function (req, res, next) {
     const results = await Sentence.find({});
 
     if (results.length === 0) {
-      res.render("fullstory");
+      res.render("newstory");
     } else if (results.length === 20) {
       const record = await Story.find({});
       await story.createNewStory(record, results, Story, Sentence, res);
@@ -95,7 +98,9 @@ async function start() {
   }
 
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: MONGODB_CONNECTION_TIMEOUT_MS,
+    });
 
     const port = process.env.PORT || 3000;
     app.listen(port, function () {
