@@ -7,7 +7,7 @@ async function createNewStory(record, results, storyModel, sentenceModel, respon
 
   await story.save();
   await sentenceModel.deleteMany({});
-  respond.render("newstory");
+  respond.render("newstory", { hasStories: true });
 }
 
 exports.createNewStory = createNewStory;

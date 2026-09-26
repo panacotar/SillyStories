@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 const story = require("./modules/create_story.js");
 
-const STORY_SENTENCE_LIMIT = 2;
+const STORY_SENTENCE_LIMIT = 10;
 const MONGODB_CONNECTION_TIMEOUT_MS =
   process.env.NODE_ENV === "production" ? 30_000 : 3_000;
 
@@ -38,10 +38,14 @@ const Story = mongoose.model("Story", fullStoriesSchema);
 app.get("/", async function (req, res, next) {
   try {
     const newest = Sentence.findOne().sort({ _id: -1 });
-    const results = await Sentence.find({});
+    const [results, existingStory] = await Promise.all([
+      Sentence.find({}),
+      Story.exists({}),
+    ]);
+    const hasStories = existingStory !== null;
 
     if (results.length === 0) {
-      res.render("newstory");
+      res.render("newstory", { hasStories });
     } else if (results.length === STORY_SENTENCE_LIMIT) {
       const record = await Story.find({});
       await story.createNewStory(record, results, Story, Sentence, res);
@@ -53,6 +57,7 @@ app.get("/", async function (req, res, next) {
         toRender: newestDoc,
         sencentesLeft: sLeft,
         sentenceLimit: STORY_SENTENCE_LIMIT,
+        hasStories,
       });
     }
   } catch (error) {
@@ -64,6 +69,18 @@ app.get("/stories", async function (req, res, next) {
   try {
     const recordedStories = await Story.find().exec();
     res.render("stories", { stories: recordedStories });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/about", async function (req, res, next) {
+  try {
+    const existingStory = await Story.exists({});
+    res.render("about", {
+      hasStories: existingStory !== null,
+      sentenceLimit: STORY_SENTENCE_LIMIT,
+    });
   } catch (error) {
     next(error);
   }
