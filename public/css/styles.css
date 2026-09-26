@@ -5,7 +5,6 @@
 @import url("components/stories.css");
 
 body {
-  text-align: center;
   background-color: #cfb3d6;
 }
 
@@ -32,6 +31,9 @@ h4 {
 }
 
 .title-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
   margin-bottom: 30px;
   width: 70%;
   height: 70%;
@@ -89,7 +91,13 @@ h4 {
   font-size: 11px;
 }
 
+.email-opt-in,
+.email-placeholder {
+  text-align: center;
+}
+
 .img-submit {
+  display: block;
   width: 250px;
-  margin-top: 20px;
+  margin: 20px auto 0;
 }

@@ -1,12 +1,13 @@
 .new-sentence{
-    height: 38px;
+    height: 54px;
     width: 100%;
-    /* border: 1px solid #888; */
+    padding: 10px;
     border: 1px solid #2b2a2f;
     margin-bottom: 5px;
     background-color: #cfb3d6;
     outline: none;
     resize: none;
+    text-align: left;
     font-family: 'Anonymous Pro', monospace;
     font-weight: 600;  
 }

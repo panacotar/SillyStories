@@ -5,7 +5,14 @@
   font-weight: bolder;
 }
 
+.stories-text {
+  text-align: center;
+}
+
 .main .draw-line {
   /* width: 60%; */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
   width: 200px;
 }

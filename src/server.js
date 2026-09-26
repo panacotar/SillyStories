@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 const story = require("./modules/create_story.js");
 
-const STORY_SENTENCE_LIMIT = 20;
+const STORY_SENTENCE_LIMIT = 2;
 const MONGODB_CONNECTION_TIMEOUT_MS =
   process.env.NODE_ENV === "production" ? 30_000 : 3_000;
 
