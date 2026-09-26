@@ -1,5 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" prefix="og: https://ogp.me/ns#">
+  <% const resolvedHeaderLogo = typeof headerLogo === "undefined"
+    ? {
+      src: "/images/silly_stories_title.png",
+      alt: "Silly Stories",
+      href: "/",
+      linkLabel: "Silly Stories home",
+    }
+    : headerLogo; %>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -28,3 +36,18 @@
   </head>
 
   <body>
+    <header class="site-header<% if (resolvedHeaderLogo.showHomeLink) { %> site-header-with-home<% } %>">
+      <% if (resolvedHeaderLogo.href) { %>
+        <a class="site-header-link" href="<%= resolvedHeaderLogo.href %>" aria-label="<%= resolvedHeaderLogo.linkLabel %>">
+          <img class="site-logo" src="<%= resolvedHeaderLogo.src %>" alt="<%= resolvedHeaderLogo.alt %>">
+        </a>
+      <% } else { %>
+        <img class="site-logo" src="<%= resolvedHeaderLogo.src %>" alt="<%= resolvedHeaderLogo.alt %>">
+      <% } %>
+
+      <% if (resolvedHeaderLogo.showHomeLink) { %>
+        <div class="header-links">
+          <a href="/">home</a>
+        </div>
+      <% } %>
+    </header>

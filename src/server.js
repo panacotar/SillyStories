@@ -6,6 +6,7 @@ const ejs = require("ejs");
 const mongoose = require("mongoose");
 
 const story = require("./modules/create_story.js");
+const { Sentence, Story } = require("./models.js");
 
 const STORY_SENTENCE_LIMIT = 10;
 const MONGODB_CONNECTION_TIMEOUT_MS =
@@ -14,26 +15,6 @@ const MONGODB_CONNECTION_TIMEOUT_MS =
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
-
-const messageSchema = new mongoose.Schema({
-  id: Number,
-  text: "String",
-  name: "String",
-  email: "String",
-});
-
-const Sentence = mongoose.model("Sentence", messageSchema);
-
-const fullStoriesSchema = new mongoose.Schema({
-  id: Number,
-  name: "String",
-  parts: {
-    type: [messageSchema],
-    required: true,
-  },
-});
-
-const Story = mongoose.model("Story", fullStoriesSchema);
 
 app.get("/", async function (req, res, next) {
   try {

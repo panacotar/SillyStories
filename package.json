@@ -5,9 +5,10 @@
   "main": "server.js",
   "scripts": {
     "start": "node src/server.js",
-    "check": "node --check src/server.js && node --check src/modules/create_story.js",
+    "check": "node --check src/server.js && node --check src/models.js && node --check src/modules/create_story.js && node --check scripts/seed.js",
     "test": "npm run check",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "seed": "node scripts/seed.js"
   },
   "author": "",
   "license": "ISC",

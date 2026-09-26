@@ -2,7 +2,7 @@
 
 Collectively creative writing game where one person writes a sentence and others will continue the story, but only seeing the last sentence. 
 
-Once there are 20 sentences, the app automatically creates a story, publishes it on the complete-stories page and deletes the sentences.
+Once there are 10 sentences, the app automatically creates a story, publishes it on the complete-stories page and deletes the sentences.
 The next user is being shown the new-story page and can choose whether to see all the complete story, or to start a new one.
 
 Users are able to decide if they wanted to receive the complete story via email.
@@ -62,6 +62,19 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. On later
 runs, start MongoDB with `docker compose up -d` before starting the app. You can
 check the database status with `docker compose ps` and follow its logs with
 `docker compose logs -f mongodb`.
+
+### Seed the local database
+
+With MongoDB running and `MONGODB_URI` configured in `.env`, run this command
+from the project root:
+
+```sh
+npm run seed
+```
+
+This adds three sample stories with 10 sentences each. The development server
+does not need to be running. You can run the command again safely: it updates
+the sample stories without deleting stories created by users.
 
 Use `npm start` to run the app without automatic restarts. To validate the
 JavaScript entry points, run `npm test`.

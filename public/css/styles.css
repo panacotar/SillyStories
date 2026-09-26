@@ -12,6 +12,7 @@ h4 {
   margin-bottom: 0;
 }
 
+.site-header,
 .main {
   font-family: "Anonymous Pro", monospace;
   width: 30vw;
@@ -19,7 +20,23 @@ h4 {
   margin: auto;
 }
 
+.site-header-link {
+  display: block;
+}
+
+.site-logo {
+  display: block;
+  width: 70%;
+  height: auto;
+  margin: 0 auto 30px;
+}
+
+.site-header-with-home .site-logo {
+  margin-bottom: 0;
+}
+
 @media (max-width: 768px) {
+  .site-header,
   .main {
     width: 80vw;
     position: relative;
@@ -30,17 +47,41 @@ h4 {
   }
 }
 
-.title-img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 30px;
-  width: 70%;
-  height: 70%;
+.site-menu {
+  position: fixed;
+  right: clamp(20px, 4vw, 60px);
+  bottom: clamp(20px, 4vw, 48px);
+  width: min(16vw, 220px);
+  min-width: 140px;
+  text-align: center;
 }
 
-.title-full {
-  margin-bottom: 0;
+.archive-link {
+  display: block;
+}
+
+.archive-icon {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.menu-links,
+.header-links {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 10px;
+  font-family: "Anonymous Pro", monospace;
+}
+
+.menu-links a,
+.header-links a {
+  color: #2b2a2f;
+}
+
+.header-links {
+  margin-bottom: 50px;
 }
 
 .label-title {
@@ -100,4 +141,14 @@ h4 {
   display: block;
   width: 250px;
   margin: 20px auto 0;
+}
+
+@media (max-width: 768px) {
+  .site-menu {
+    position: static;
+    width: 70%;
+    min-width: 0;
+    max-width: 220px;
+    margin: 40px auto 20px;
+  }
 }
