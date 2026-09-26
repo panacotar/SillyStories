@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 
 const story = require("./modules/create_story.js");
 
+const STORY_SENTENCE_LIMIT = 20;
 const MONGODB_CONNECTION_TIMEOUT_MS =
   process.env.NODE_ENV === "production" ? 30_000 : 3_000;
 
@@ -41,14 +42,18 @@ app.get("/", async function (req, res, next) {
 
     if (results.length === 0) {
       res.render("newstory");
-    } else if (results.length === 20) {
+    } else if (results.length === STORY_SENTENCE_LIMIT) {
       const record = await Story.find({});
       await story.createNewStory(record, results, Story, Sentence, res);
     } else {
       const data = await newest.exec();
       const newestDoc = data.text;
-      const sLeft = 20 - data.id;
-      res.render("index", { toRender: newestDoc, sencentesLeft: sLeft });
+      const sLeft = STORY_SENTENCE_LIMIT - data.id;
+      res.render("index", {
+        toRender: newestDoc,
+        sencentesLeft: sLeft,
+        sentenceLimit: STORY_SENTENCE_LIMIT,
+      });
     }
   } catch (error) {
     next(error);
