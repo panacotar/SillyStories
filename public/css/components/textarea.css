@@ -1,9 +1,8 @@
 .new-sentence{
     height: 54px;
-    width: 100%;
+    width: 95%;
     padding: 10px;
     border: 1px solid #2b2a2f;
-    margin-bottom: 5px;
     background-color: #cfb3d6;
     outline: none;
     resize: none;

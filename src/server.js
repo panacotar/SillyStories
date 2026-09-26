@@ -88,6 +88,10 @@ app.post("/", async function (req, res, next) {
   }
 });
 
+app.use(function (req, res) {
+  res.status(404).render("404");
+});
+
 app.use(function (error, req, res, next) {
   console.error(error);
   res.status(500).send("Something went wrong.");

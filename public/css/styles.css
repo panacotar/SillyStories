@@ -28,7 +28,7 @@ h4 {
   display: block;
   width: 70%;
   height: auto;
-  margin: 0 auto 30px;
+  margin: auto;
 }
 
 .site-header-with-home .site-logo {
@@ -75,8 +75,7 @@ h4 {
   font-family: "Anonymous Pro", monospace;
 }
 
-.menu-links a,
-.header-links a {
+a {
   color: #2b2a2f;
 }
 
@@ -88,29 +87,21 @@ h4 {
   margin-bottom: 5px;
   text-align: center;
 }
-.label-title p {
-  font-size: 13px;
-  margin: 0 auto;
-}
 
 .description {
   text-align: left;
-  margin: 20px auto 40px auto;
-  /* padding: 0 70px; */
-  color: gray;
+  margin: 20px auto;
+  color: #5f5f5f;
 }
 
-.lastSent-box {
-  border: 1px solid #2b2a2f;
+.prevSent-box {
   text-align: end;
   margin-top: 5px;
   padding-bottom: 3px;
 }
+
 .last-sentence {
-  /* width: 100%; */
-  margin: auto 0px;
-  padding: 5px;
-  font-size: 14px;
+  font-size: 18px;
   font-family: "Anonymous Pro", monospace;
   font-weight: 700;
   text-align: left;
@@ -118,9 +109,12 @@ h4 {
 }
 
 .sentences-countdown {
-  font-size: 13px;
-  display: inline;
-  padding-right: 5px;
+  font-size: 11px;
+  font-style: italic;
+  text-align: right;
+  width: 100%;
+  margin: 0;
+  margin-bottom: 30px;
 }
 
 #form {
@@ -140,7 +134,39 @@ h4 {
 .img-submit {
   display: block;
   width: 250px;
-  margin: 20px auto 0;
+  margin: auto;
+}
+
+.not-found {
+  text-align: center;
+}
+
+.not-found-code {
+  margin: 0;
+  color: #2b2a2f;
+  font-size: clamp(5rem, 14vw, 8rem);
+  line-height: 0.9;
+}
+
+.not-found-message {
+  margin: 20px auto 30px;
+  color: #66606a;
+  line-height: 1.5;
+}
+
+.not-found-link {
+  display: inline-block;
+  border: 1px solid #2b2a2f;
+  padding: 10px 18px;
+  color: #2b2a2f;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.not-found-link:hover,
+.not-found-link:focus-visible {
+  background: #2b2a2f;
+  color: #cfb3d6;
 }
 
 @media (max-width: 768px) {
