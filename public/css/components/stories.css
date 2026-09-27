@@ -9,6 +9,11 @@
   text-align: center;
 }
 
+.stories-empty {
+  color: #5f5f5f;
+  text-align: center;
+}
+
 .main .draw-line {
   width: 100%;
   display: block;
