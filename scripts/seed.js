@@ -124,11 +124,11 @@ On Tuesday morning, a dragon somehow squeezed through the library's automatic do
 
 People scattered immediately.
 
-Someone knocked over a chair
+someone knocked over a chair
 
-It struck a backpack.
+It struck a backpack
 
-It rolled across the floor and stopped beside a dusty red backpack.
+it rolled across the floor spilling pens, receipts, and notes
 
 a hand reached down..
 
