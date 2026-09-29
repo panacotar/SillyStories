@@ -1,5 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" prefix="og: https://ogp.me/ns#">
+  <% const resolvedHeaderLogo = typeof headerLogo === "undefined"
+    ? {
+      src: "/images/silly_stories_title.png",
+      alt: "Silly Stories",
+      href: "/",
+      linkLabel: "Silly Stories home",
+    }
+    : headerLogo; %>
+  <% const resolvedPageTitle = typeof pageTitle === "undefined"
+    ? "Silly Stories"
+    : `${pageTitle} | Silly Stories`; %>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,7 +19,7 @@
     <meta
       name="image"
       property="og:image"
-      content="images/silly_stories_title.png"
+      content="/images/silly_stories_title.png"
     />
     <meta
       name="description"
@@ -16,16 +27,30 @@
       content="A collaborative story writing"
     />
 
-    <title>Silly Stories</title>
+    <title><%= resolvedPageTitle %></title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link
       href="https://fonts.googleapis.com/css?family=Anonymous+Pro:400,700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/styles.css" />
-    <link rel="icon" href="images/favicon.ico" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="icon" href="/images/favicon.ico" />
   </head>
 
-  <body></body>
-</html>
+  <body>
+    <header class="site-header<% if (resolvedHeaderLogo.showHomeLink) { %> site-header-with-home<% } %>">
+      <% if (resolvedHeaderLogo.href) { %>
+        <a class="site-header-link" href="<%= resolvedHeaderLogo.href %>" aria-label="<%= resolvedHeaderLogo.linkLabel %>">
+          <img class="site-logo" src="<%= resolvedHeaderLogo.src %>" alt="<%= resolvedHeaderLogo.alt %>">
+        </a>
+      <% } else { %>
+        <img class="site-logo" src="<%= resolvedHeaderLogo.src %>" alt="<%= resolvedHeaderLogo.alt %>">
+      <% } %>
+
+      <% if (resolvedHeaderLogo.showHomeLink) { %>
+        <div class="header-links">
+          <a href="/">home</a>
+        </div>
+      <% } %>
+    </header>

@@ -5,7 +5,6 @@
 @import url("components/stories.css");
 
 body {
-  text-align: center;
   background-color: #cfb3d6;
 }
 
@@ -13,6 +12,7 @@ h4 {
   margin-bottom: 0;
 }
 
+.site-header,
 .main {
   font-family: "Anonymous Pro", monospace;
   width: 30vw;
@@ -20,7 +20,23 @@ h4 {
   margin: auto;
 }
 
+.site-header-link {
+  display: block;
+}
+
+.site-logo {
+  display: block;
+  width: 70%;
+  height: auto;
+  margin: auto;
+}
+
+.site-header-with-home .site-logo {
+  margin-bottom: 0;
+}
+
 @media (max-width: 768px) {
+  .site-header,
   .main {
     width: 80vw;
     position: relative;
@@ -31,43 +47,61 @@ h4 {
   }
 }
 
-.title-img {
-  margin-bottom: 30px;
-  width: 70%;
-  height: 70%;
+.site-menu {
+  position: fixed;
+  right: clamp(20px, 4vw, 60px);
+  bottom: clamp(20px, 4vw, 48px);
+  width: min(16vw, 220px);
+  min-width: 140px;
+  text-align: center;
 }
 
-.title-full {
-  margin-bottom: 0;
+.archive-link {
+  display: block;
+}
+
+.archive-icon {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.menu-links,
+.header-links {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 10px;
+  font-family: "Anonymous Pro", monospace;
+}
+
+a {
+  color: #2b2a2f;
+}
+
+.header-links {
+  margin-bottom: 50px;
 }
 
 .label-title {
   margin-bottom: 5px;
   text-align: center;
 }
-.label-title p {
-  font-size: 13px;
-  margin: 0 auto;
-}
 
 .description {
   text-align: left;
-  margin: 20px auto 40px auto;
-  /* padding: 0 70px; */
-  color: gray;
+  margin: 20px auto;
+  color: #5f5f5f;
 }
 
-.lastSent-box {
-  border: 1px solid #2b2a2f;
+.prevSent-box {
   text-align: end;
   margin-top: 5px;
   padding-bottom: 3px;
 }
+
 .last-sentence {
-  /* width: 100%; */
-  margin: auto 0px;
-  padding: 5px;
-  font-size: 14px;
+  font-size: 18px;
   font-family: "Anonymous Pro", monospace;
   font-weight: 700;
   text-align: left;
@@ -75,9 +109,12 @@ h4 {
 }
 
 .sentences-countdown {
-  font-size: 13px;
-  display: inline;
-  padding-right: 5px;
+  font-size: 11px;
+  font-style: italic;
+  text-align: right;
+  width: 100%;
+  margin: 0;
+  margin-bottom: 30px;
 }
 
 #form {
@@ -89,7 +126,55 @@ h4 {
   font-size: 11px;
 }
 
+.email-opt-in,
+.email-placeholder {
+  text-align: center;
+}
+
 .img-submit {
+  display: block;
   width: 250px;
-  margin-top: 20px;
+  margin: auto;
+}
+
+.not-found {
+  text-align: center;
+}
+
+.not-found-code {
+  margin: 0;
+  color: #2b2a2f;
+  font-size: clamp(5rem, 14vw, 8rem);
+  line-height: 0.9;
+}
+
+.not-found-message {
+  margin: 20px auto 30px;
+  color: #66606a;
+  line-height: 1.5;
+}
+
+.not-found-link {
+  display: inline-block;
+  border: 1px solid #2b2a2f;
+  padding: 10px 18px;
+  color: #2b2a2f;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.not-found-link:hover,
+.not-found-link:focus-visible {
+  background: #2b2a2f;
+  color: #cfb3d6;
+}
+
+@media (max-width: 768px) {
+  .site-menu {
+    position: static;
+    width: 70%;
+    min-width: 0;
+    max-width: 220px;
+    margin: 40px auto 20px;
+  }
 }

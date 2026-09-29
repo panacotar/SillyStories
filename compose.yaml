@@ -1,0 +1,19 @@
+services:
+  mongodb:
+    # MongoDB 8.x currently fails on Docker Desktop kernels affected by
+    # SERVER-121912. MongoDB 7.0 remains compatible with this app.
+    image: mongo:7.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27018:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  mongodb_data:

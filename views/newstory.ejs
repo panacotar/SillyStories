@@ -1,0 +1,34 @@
+<%- include("partials/_header") %>
+
+<div class="main">
+  <div class="label-title">
+    <a href="/about#how-to-play">How to play</a>
+  </div>
+
+  <div class="label-title">
+    <h4>Write the first sentence of the story</h4>
+  </div>
+
+  <form id="form" action="/" method="POST">
+    <div class="label-title">
+      <h4>YOUR FIRST SENTENCE:</h4>
+    </div>
+    <%- include("partials/_sentence_input", { required: false }) %>
+    <br />
+    <%- include("partials/_email_prompt") %>
+
+    <br>
+    <input type="image" src="/images/send_button.png" class="img-submit" alt="Image Submit, Send silliness" />
+  </form>
+
+  <%- include("partials/_menu") %>
+</div>
+<script>
+  $("#checkbox").change(function () {
+    $("#email-input").toggle("slow", "linear", function () { });
+    //$("#fName").toggle("slow", function () {});
+  });
+</script>
+</body>
+
+</html>

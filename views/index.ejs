@@ -1,37 +1,17 @@
 <%- include("partials/_header") %>
 
 <div class="main">
-  <img class="title-img" src="images/silly_stories_title.png" alt="Silly Stories Title" />
-
   <div class="label-title">
-    <h4>HOW TO PLAY:</h4>
+    <a href="/about#how-to-play">How to play</a>
   </div>
-  <p class="description">
-    <b>1.</b> In this creative writing game, you and others collectively
-    write a story, sentence by sentence. The thing is, you can only see the
-    previous sentence of the story before you write yours. Read the guide
-    sentence below and write the sentence you think comes next in the story.
-    <br />
-    <b>2.</b> Press enter, and your sentence will move into the guiding
-    sentence spot for the next person to read. Voila! You’ve participated.
-    <br />
-    <b>3.</b> If you want to receive the full story when it’s done, check
-    the box, enter your email and we’ll send it to you!
-    <br />
-  </p>
 
   <div class="label-title">
-    <h4>LAST SENTENCE:</h4>
-    <p>(Use this to guide your sentence)</p>
+    <h4>PREVIOUS SENTENCE:</h4>
 
-    <div class="lastSent-box">
-      <p name="lastSent" class="last-sentence">
+      <p name="prevSent" class="last-sentence">
         <%= toRender %>
       </p>
-      <p class="sentences-countdown">
-        Sentences left in the story: <%= sencentesLeft %> / 20
-      </p>
-    </div>
+
   </div>
 
   <div class="box">
@@ -39,29 +19,17 @@
       <div class="label-title">
         <h4>YOUR SENTENCE:</h4>
       </div>
-      <textarea class="new-sentence" name="message" minlength="10" required></textarea>
+      <%- include("partials/_sentence_input", { required: true }) %>
       <br />
-      <div>
-        <input id="checkbox" class="checkbox-custom" name="checkbox" type="checkbox">
-        <label for="checkbox" class="checkbox-custom-label">
-          Want to receive the full story when it's written?
-        </label>
-      </div>
-      <br />
-      <div class="email-placeholder">
-        <div id="email-input" hidden>
-          <label for="email">Your email:</label>
-          <input type="email" name="email" id="email" />
-          <p>(We promise only to send you the story and nothing else.)</p>
-        </div>
-      </div>
+      <%- include("partials/_email_prompt") %>
       <br>
+      <p class="sentences-countdown">
+        Sentences left in the story: <%= sencentesLeft %> / <%= sentenceLimit %>
+      </p>
       <input type="image" src="/images/send_button.png" class="img-submit" alt="Image Submit, Send silliness" />
     </form>
 
-    <a href="/stories">
-      <img class="title-img" src="images/silly_archive.png" alt="Silly Archive">
-    </a>
+    <%- include("partials/_menu") %>
 
   </div>
 </div>

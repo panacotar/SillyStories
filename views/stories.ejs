@@ -1,9 +1,19 @@
-<%- include("partials/_header") %>
+<%- include("partials/_header", {
+  headerLogo: {
+    src: "/images/silly_archive.png",
+    alt: "Silly Archive",
+    href: null,
+    showHomeLink: true,
+  },
+}) %>
 
 <div class="main">
-  <a href="/">
-    <img class="title-img" src="images/silly_stories_title.png" alt="Silly Stories Title" />
-  </a>
+  <% if (stories.length === 0) { %>
+  <div class="stories-empty">
+    <p>There are no stories yet.</p>
+  </div>
+  <% } %>
+
   <% let count = 0 %>
   <% stories.forEach((story) => { %>
 
@@ -22,6 +32,8 @@
   <img class="draw-line" src="images/Line.png " alt="separating line" />
 
   <% }) %>
+
+  <%- include("partials/_menu") %>
 </div>
 </body>
 
