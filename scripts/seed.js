@@ -116,3 +116,28 @@ if (require.main === module) {
 }
 
 module.exports = { buildParts, seedStories };
+
+// Prod seed
+/**
+ * 
+On Tuesday morning, a dragon somehow squeezed through the library's automatic doors.
+
+People scattered immediately.
+
+Someone knocked over a chair
+
+It struck a backpack.
+
+It rolled across the floor and stopped beside a dusty red backpack.
+
+a hand reached down..
+
+It grabbed a folded map covered in tiny handwritten notes.
+
+...one sentence was circled twice:
+
+“Leave before the bells.”
+
+Nobody knew why. Why?
+  *
+*/
