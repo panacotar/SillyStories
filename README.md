@@ -76,44 +76,28 @@ This adds three sample stories with 10 sentences each. The development server
 does not need to be running. You can run the command again safely: it updates
 the sample stories without deleting stories created by users.
 
-Use `npm start` to run the app without automatic restarts. To validate the
-JavaScript entry points, run `npm test`.
+Use `npm start` to run the app without automatic restarts. To check the
+JavaScript and run the HTTP security regression tests, run `npm test`.
 
 To stop MongoDB, run `docker compose down`. The database is preserved between
 restarts; use `docker compose down --volumes` only when you also want to delete
 all local database data.
 
-## Free deployment
+## Production deployment (Hetzner VPS)
 
-The recommended deployment is a Render Free Web Service backed by a MongoDB Atlas Free cluster.
-
-Create the Render service with these settings:
-
-- Runtime: Node
-- Region: Frankfurt (choose a nearby Atlas region)
-- Build command: `npm ci`
-- Start command: `npm start`
-- Instance type: Free
-- Environment variables:
-  - `MONGODB_URI`: the complete Atlas connection string
-  - `NODE_ENV`: `production`
-
-After creating the Render service, copy its outbound CIDR ranges from the service's **Connect > Outbound** panel into the Atlas project's IP access list. This avoids opening the database to `0.0.0.0/0`.
-
-Render Free services sleep after 15 minutes without inbound traffic, so the first request after an idle period can take about a minute. The deployed URL will be the `onrender.com` address shown in the Render dashboard.
+See the [Hetzner VPS deployment guide](deploy/README.md) for production setup,
+migration, backups, and operations.
 
 ## Notes
 
 - The email opt-in interface and stored email field are retained from the original app, but email delivery is not implemented.
-- Set secrets only in `.env` locally or in the Render dashboard. Never commit a real Atlas connection string.
-- The Heroku `Procfile` is retained for compatibility, but Render uses the `start` script in `package.json`.
+- Set local secrets only in `.env`. Never commit a real Atlas connection string.
 
 ______________
 
 ### Built with:
 - Node.js
 - Express
-- jQuery
 - EJS
 - mongoose ODM
 - **Database**

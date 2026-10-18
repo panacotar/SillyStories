@@ -1,0 +1,11 @@
+[Unit]
+Description=Export the Silly Stories MongoDB database
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+User=deploy
+WorkingDirectory=/opt/silly-stories
+ExecStart=/opt/silly-stories/scripts/backup-db.sh
+UMask=0077
