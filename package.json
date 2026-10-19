@@ -5,9 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node src/server.js",
-    "check": "node --check src/server.js && node --check src/app.js && node --check src/security.js && node --check src/config.js && node --check src/models.js && node --check src/modules/create_story.js && node --check scripts/seed.js",
+    "check": "node --check src/server.js && node --check src/app.js && node --check src/security.js && node --check src/config.js && node --check src/models.js && node --check src/modules/create_story.js && node --check scripts/seed.js && node --check scripts/dev.js",
     "test": "npm run check && node --test test/*.test.js",
-    "dev": "node --watch src/server.js",
+    "dev": "node scripts/dev.js",
     "seed": "node scripts/seed.js"
   },
   "author": "",

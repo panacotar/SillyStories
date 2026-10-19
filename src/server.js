@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { once } = require("node:events");
 const mongoose = require("mongoose");
 const { createApp } = require("./app.js");
 const { mongodbUri } = require("./config.js");
@@ -8,9 +9,9 @@ async function start() {
   await mongoose.connect(mongodbUri(), {
     serverSelectionTimeoutMS: process.env.NODE_ENV === "production" ? 30_000 : 3_000,
   });
-  const server = app.listen(process.env.PORT || 3000, "0.0.0.0", () => {
-    console.log(`Server has started, port ${process.env.PORT || 3000}`);
-  });
+  const server = app.listen(process.env.PORT || 3000, "0.0.0.0");
+  await once(server, "listening");
+  console.log(`Server has started: http://localhost:${server.address().port}`);
   server.requestTimeout = 15_000;
   server.headersTimeout = 10_000;
 
@@ -29,8 +30,11 @@ async function start() {
   process.on("SIGINT", shutdown);
 }
 
-start().catch((error) => {
-  console.error("Startup failed:", error.name);
+start().catch(async (error) => {
+  console.error("Startup failed:", error.code || error.name);
+  if (error.code === "EADDRINUSE") {
+    console.error(`Port ${process.env.PORT || 3000} is already in use. Stop the other server or choose a different PORT in .env.`);
+  }
   if (error.name === "MongooseServerSelectionError") {
     console.error("Cannot connect to MongoDB. Check that the database is running and its connection settings are correct.");
     if (process.env.NODE_ENV !== "production") {
@@ -39,4 +43,5 @@ start().catch((error) => {
     }
   }
   process.exitCode = 1;
+  await mongoose.disconnect();
 });
