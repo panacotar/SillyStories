@@ -31,5 +31,12 @@ async function start() {
 
 start().catch((error) => {
   console.error("Startup failed:", error.name);
+  if (error.name === "MongooseServerSelectionError") {
+    console.error("Cannot connect to MongoDB. Check that the database is running and its connection settings are correct.");
+    if (process.env.NODE_ENV !== "production") {
+      console.error("For the local database, start Docker Desktop, then run: docker compose up -d --wait");
+      console.error("Then rerun npm run dev. If using an external database, check MONGODB_URI in .env and network access.");
+    }
+  }
   process.exitCode = 1;
 });
