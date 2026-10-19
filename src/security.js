@@ -8,6 +8,10 @@ function installSecurity(app, { production, publicOrigin, trustProxy }) {
   // Exactly one proxy in production: Caddy. The app has no published port.
   app.set("trust proxy", trustProxy);
   app.use(helmet({
+    // no-referrer makes Firefox send Origin: null for native form POSTs,
+    // which our CSRF origin check correctly rejects. Keep same-origin form
+    // origins while still withholding referrers from external sites.
+    referrerPolicy: { policy: "same-origin" },
     contentSecurityPolicy: {
       directives: {
         "script-src": ["'self'"],

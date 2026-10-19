@@ -1,6 +1,7 @@
 const { test, before, after } = require("node:test");
 const assert = require("node:assert/strict");
 const { createApp } = require("../src/app.js");
+const { Sentence } = require("../src/models.js");
 
 const origin = "https://silly-stories.organicdarius.com";
 let server;
@@ -43,6 +44,7 @@ test("responses set a strict CSP, secure cookie, and no framework header", async
   assert.match(response.headers.get("set-cookie"), /__Host-silly-csrf=.*; Path=\/; HttpOnly; Secure; SameSite=Strict/);
   assert.equal(response.headers.get("x-powered-by"), null);
   assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.equal(response.headers.get("referrer-policy"), "same-origin");
   assert.equal(response.headers.get("strict-transport-security"), "max-age=31536000");
 });
 
@@ -57,7 +59,22 @@ test("forged forms and cross-site submissions are blocked before database access
   assert.equal((await submit({ message: "A valid sentence", _csrf: "0".repeat(64) })).status, 403);
   assert.equal((await submit({ message: "A valid sentence" }, { Cookie: "" })).status, 403);
   assert.equal((await submit({ message: "A valid sentence" }, { Origin: "https://evil.example" })).status, 403);
+  assert.equal((await submit({ message: "A valid sentence" }, { Origin: "null" })).status, 403);
   assert.equal((await submit({ message: "A valid sentence" }, { "Sec-Fetch-Site": "cross-site" })).status, 403);
+});
+
+test("a same-origin form with a matching CSRF token saves its sentence", async (t) => {
+  t.mock.method(Sentence, "find", async () => []);
+  const save = t.mock.method(Sentence.prototype, "save", async function () {
+    return this;
+  });
+  const response = await submit({ message: "  A valid sentence  " }, {
+    "Sec-Fetch-Site": "same-origin",
+  });
+  assert.equal(response.status, 303);
+  assert.equal(response.headers.get("location"), "/");
+  assert.equal(save.mock.callCount(), 1);
+  assert.equal(save.mock.calls[0].this.text, "A valid sentence");
 });
 
 test("invalid text, repeated fields, and oversized bodies cannot reach MongoDB", async () => {
