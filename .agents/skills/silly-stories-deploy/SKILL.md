@@ -1,6 +1,6 @@
 ---
 name: silly-stories-deploy
-description: Deploy, migrate, update, troubleshoot, or back up this SillyStories repository on its Hetzner VPS using the existing Docker Compose stack. Use for this project's production hosting operations, not ordinary app development or unrelated deployments.
+description: Deploy, migrate, update, troubleshoot, or back up this SillyStories repository on a VPS using the existing Docker Compose stack. Use for this project's production hosting operations, not ordinary app development or unrelated deployments.
 ---
 
 # Silly Stories deployment
@@ -35,8 +35,9 @@ keep detailed operator instructions in its existing runbook.
   before acting: they can select another stack or volume set.
 - Keep the existing project name and database/certificate volumes when updating.
   Never delete or prune production volumes. Keep MongoDB and app ports private;
-  only Caddy publishes TCP 80/443. Retain database authentication, least-privilege
-  app credentials, internal networks, and the non-root, read-only app container.
+  only Caddy publishes web ports, as defined in `compose.production.yaml`.
+  Retain database authentication, least-privilege app credentials, internal
+  networks, and the non-root, read-only app container.
 - Run one app replica. Story serialization and rate limits are process-local.
   Adding a CDN/proxy requires revisiting client-IP trust and CSRF origin handling.
 - Keep `.env.production`, `deploy/secrets/`, exports, and credentials out of Git,
@@ -59,12 +60,21 @@ which makes the safe restore script refuse the target even without user data.
 Preserve the source database and export until validation and rollback readiness
 are established. Account for stale DNS caches; do not allow two writable sites.
 
-DNS must resolve to the real VPS, including any AAAA record. Verify the Hetzner
-firewall allows HTTPS/HTTP and limits SSH to administrator ranges; UFW alone does
-not control Docker-published ports. Follow the runbook's cutover sequence before
+DNS must resolve to the real VPS, including any AAAA record. Verify the VPS
+provider's firewall allows HTTPS/HTTP and limits SSH to administrator ranges;
+UFW alone does not control Docker-published ports. Follow the runbook's cutover sequence before
 starting Caddy against a public hostname.
 
 ## Update an existing deployment
+
+For routine app releases, use `scripts/update-production.sh [branch]` from the
+existing VPS checkout (an absolute path works from any directory). With no
+argument it uses the current branch's configured upstream; an explicit branch
+selects `origin/<branch>`. Read the helper and runbook before invoking it. It
+requires a clean checkout and running stack, refuses divergent local commits,
+backs up the database, saves the app image as `silly-stories:rollback`, rebuilds
+and replaces only the app, then checks public HTTPS. It stops on failure without
+automatic rollback. Treat Compose/Caddy/database changes as separate operations.
 
 Identify the current revision/image and check for remote checkout changes before
 replacing code. Preserve a known-good release and obtain a successful database

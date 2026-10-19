@@ -20,10 +20,10 @@ Users are able to decide if they wanted to receive the complete story via email.
 cp .env.example .env
 ```
 
-2. Start MongoDB:
+2. Start Docker Desktop (or your Docker daemon), then start MongoDB:
 
 ```sh
-docker compose up -d
+docker compose up -d --wait
 ```
 
 The Compose service stores its data in a named volume and exposes MongoDB only
@@ -59,9 +59,15 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser. On later
-runs, start MongoDB with `docker compose up -d` before starting the app. You can
-check the database status with `docker compose ps` and follow its logs with
+runs, make sure Docker is running and start MongoDB with
+`docker compose up -d --wait` before starting the app. You can check the database
+status with `docker compose ps` and follow its logs with
 `docker compose logs -f mongodb`.
+
+If startup reports `MongooseServerSelectionError`, the app cannot reach MongoDB.
+The development command exits with an error instead of waiting for file changes.
+For the local database, start Docker and run `docker compose up -d --wait`, then
+rerun `npm run dev`.
 
 ### Seed the local database
 
@@ -83,9 +89,9 @@ To stop MongoDB, run `docker compose down`. The database is preserved between
 restarts; use `docker compose down --volumes` only when you also want to delete
 all local database data.
 
-## Production deployment (Hetzner VPS)
+## Production deployment (VPS)
 
-See the [Hetzner VPS deployment guide](deploy/README.md) for production setup,
+See the [VPS deployment guide](deploy/README.md) for production setup,
 migration, backups, and operations.
 
 ## Notes
