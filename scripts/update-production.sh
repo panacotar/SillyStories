@@ -10,6 +10,15 @@ usage() {
 die() { echo "$*" >&2; exit 1; }
 compose() { "$project_root/scripts/production.sh" "$@"; }
 
+step() {
+  printf '\n\n'
+  if [ -t 1 ] && [ "${TERM:-dumb}" != dumb ] && [ -z "${NO_COLOR+x}" ]; then
+    printf '\033[1;36m==> %s\033[0m\n\n' "$1"
+  else
+    printf '==> %s\n\n' "$1"
+  fi
+}
+
 cleanup() {
   result=$?
   trap - EXIT
@@ -32,6 +41,7 @@ main() {
 
   project_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
   cd "$project_root"
+  step "[1/8] Check checkout and prerequisites"
   for command in git docker curl; do
     command -v "$command" >/dev/null || die "Required command not found: $command"
   done
@@ -60,6 +70,7 @@ main() {
   trap 'exit 143' TERM
 
   # Fetch and reject missing/divergent branches before interrupting the live app.
+  step "[2/8] Fetch and validate target branch"
   git fetch --no-tags -- "$remote" "+$merge_ref:$tracking_ref"
   target_revision=$(git rev-parse --verify "$tracking_ref^{commit}")
   if git show-ref --verify --quiet "refs/heads/$branch"; then
@@ -73,12 +84,16 @@ main() {
   done
 
   echo "Updating $branch to $target_revision (previous revision: $previous_revision)."
+  step "[3/8] Back up the database"
   "$project_root/scripts/backup-db.sh"
+
+  step "[4/8] Save the previous app image for rollback"
   previous_image=$(compose images --quiet app)
   [ -n "$previous_image" ] || die "Cannot identify the running app image."
   docker image tag "$previous_image" silly-stories:rollback
   echo "Previous app image saved as silly-stories:rollback."
 
+  step "[5/8] Update checkout and validate configuration"
   if git show-ref --verify --quiet "refs/heads/$branch"; then
     git switch -- "$branch"
     git merge --ff-only "$target_revision"
@@ -86,14 +101,21 @@ main() {
     git switch --create "$branch" --track "$remote/${merge_ref#refs/heads/}"
   fi
   compose config --quiet
+
+  step "[6/8] Build the app image"
   compose build --pull app
+
+  step "[7/8] Replace the app container"
   compose up -d --no-deps --no-build --wait app
+
+  step "[8/8] Verify container health and public HTTPS"
   compose ps
   public_origin=$(compose exec -T app node -p 'process.env.PUBLIC_ORIGIN')
   case "$public_origin" in https://*) ;; *) die "App has no valid HTTPS public origin." ;; esac
   curl --fail --silent --show-error --output /dev/null \
     --connect-timeout 5 --max-time 15 --retry 5 --retry-delay 2 --retry-connrefused \
     "$public_origin/healthz"
+  step "Deployment complete"
   echo "Deployment verified: $target_revision at $public_origin"
 }
 
