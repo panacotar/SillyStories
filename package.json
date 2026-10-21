@@ -5,9 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node src/server.js",
-    "check": "node --check src/server.js && node --check src/models.js && node --check src/modules/create_story.js && node --check scripts/seed.js",
-    "test": "npm run check",
-    "dev": "nodemon src/server.js",
+    "check": "node --check src/server.js && node --check src/app.js && node --check src/security.js && node --check src/config.js && node --check src/models.js && node --check src/modules/create_story.js && node --check scripts/seed.js && node --check scripts/dev.js",
+    "test": "npm run check && node --test test/*.test.js",
+    "dev": "node scripts/dev.js",
     "seed": "node scripts/seed.js"
   },
   "author": "",
@@ -16,13 +16,11 @@
     "node": ">=24 <25"
   },
   "dependencies": {
-    "body-parser": "^1.20.8",
     "dotenv": "^8.6.0",
     "ejs": "^3.1.10",
     "express": "^4.22.3",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
     "mongoose": "^9.10.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.14"
   }
 }

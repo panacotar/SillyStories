@@ -1,1 +1,2 @@
-<textarea class="new-sentence" name="message" minlength="5" spellcheck="true"<% if (required) { %> required<% } %>></textarea>
+<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+<textarea class="new-sentence" name="message" minlength="5" maxlength="2000" spellcheck="true"<% if (required) { %> required<% } %>></textarea>
