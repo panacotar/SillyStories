@@ -13,7 +13,7 @@
     <div class="label-title">
       <h4>YOUR FIRST SENTENCE:</h4>
     </div>
-    <%- include("partials/_sentence_input", { required: false }) %>
+    <%- include("partials/_sentence_input", { required: true }) %>
     <br />
     <%- include("partials/_email_prompt") %>
 
@@ -23,12 +23,7 @@
 
   <%- include("partials/_menu") %>
 </div>
-<script>
-  $("#checkbox").change(function () {
-    $("#email-input").toggle("slow", "linear", function () { });
-    //$("#fName").toggle("slow", function () {});
-  });
-</script>
+
 </body>
 
 </html>

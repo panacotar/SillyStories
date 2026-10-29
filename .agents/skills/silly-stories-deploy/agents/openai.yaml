@@ -1,0 +1,4 @@
+interface:
+  display_name: "Silly Stories Deploy"
+  short_description: "Deploy and maintain Silly Stories on a Hetzner VPS"
+  default_prompt: "Use $silly-stories-deploy to deploy this project to its Hetzner VPS using the repository deployment scripts."
