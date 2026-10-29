@@ -56,7 +56,15 @@ const path = require("node:path");
 const name = path.basename(process.argv[1]);
 let args = process.argv.slice(2);
 if (args[0] === "compose") args = args.slice(args.indexOf("-f") + 2);
-fs.appendFileSync(process.env.DEPLOY_TEST_LOG, JSON.stringify({ name, args }) + "\\n");
+const databaseLocked = fs.existsSync(path.join(process.cwd(), ".db-operation.lock"));
+fs.appendFileSync(process.env.DEPLOY_TEST_LOG, JSON.stringify({ name, args, databaseLocked }) + "\\n");
+if (args[0] === "build" && process.env.DEPLOY_TEST_BACKUP_DURING_BUILD) {
+  const { spawnSync } = require("node:child_process");
+  const backup = spawnSync("bash", ["scripts/backup-db.sh"], { encoding: "utf8" });
+  fs.appendFileSync(process.env.DEPLOY_TEST_LOG, JSON.stringify({
+    name: "concurrent-backup", args: [], status: backup.status, stderr: backup.stderr,
+  }) + "\\n");
+}
 if (name === "curl") process.exit(process.env.DEPLOY_TEST_FAIL === "https" ? 22 : 0);
 if (args[0] === "ps" && args.includes("--quiet")) {
   if (args.at(-1) !== process.env.DEPLOY_TEST_STOPPED) console.log("container");
@@ -249,6 +257,37 @@ test("concurrent deployment lock refuses a second update", (t) => {
   assert.match(result.stderr, /Another update is running/);
   assert.deepEqual(f.events(), []);
   assert.ok(fs.existsSync(path.join(f.checkout, ".git/silly-stories-deploy.lock")));
+});
+
+test("deployment excludes concurrent backups through replacement and verification", (t) => {
+  const f = fixture(t);
+  f.release();
+  const result = f.run([], { DEPLOY_TEST_BACKUP_DURING_BUILD: "1" });
+  assert.equal(result.status, 0, result.stderr);
+  const events = f.events();
+  const backup = events.find(({ name }) => name === "concurrent-backup");
+  assert.equal(backup.status, 1);
+  assert.match(backup.stderr, /Another database operation is running/);
+  assert.equal(events.filter(({ args }) => args.includes("dump")).length, 1);
+  assert.equal(events.filter(({ args }) => args[0] === "stop").length, 1);
+  for (const phase of ["images", "build", "up"]) {
+    assert.equal(events.find(({ args }) => args[0] === phase).databaseLocked, true);
+  }
+  assert.equal(events.find(({ name }) => name === "curl").databaseLocked, true);
+  f.noLocks();
+});
+
+test("an active database operation refuses an update without removing its lock", (t) => {
+  const f = fixture(t);
+  f.release();
+  const lock = path.join(f.checkout, ".db-operation.lock");
+  fs.mkdirSync(lock);
+  const result = f.run();
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Another database operation is running/);
+  assert.ok(fs.existsSync(lock));
+  assert.equal(fs.existsSync(path.join(f.checkout, ".git/silly-stories-deploy.lock")), false);
+  assert.equal(f.events().some(({ args }) => ["stop", "build", "up"].includes(args[0])), false);
 });
 
 test("detached checkout needs an explicit branch and help needs no deployment", (t) => {

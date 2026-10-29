@@ -37,7 +37,11 @@ function installSecurity(app, { production, publicOrigin, trustProxy }) {
     message: "Too many requests. Please try again shortly.",
   }));
   app.use(express.static("public", { dotfiles: "deny" }));
-  app.use(express.urlencoded({ extended: false, limit: "8kb", parameterLimit: 10 }));
+  // Percent-encoded Unicode can use nine bytes per UTF-16 code unit. Leave room
+  // for all validated fields and CSRF; keep this cap aligned with Caddy.
+  app.use(express.urlencoded({
+    extended: false, limit: 32 * 1024, parameterLimit: 10, inflate: false,
+  }));
 
   const cookieName = production ? "__Host-silly-csrf" : "silly-csrf";
   app.use((req, res, next) => {

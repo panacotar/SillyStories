@@ -1,5 +1,6 @@
 const { test, before, after } = require("node:test");
 const assert = require("node:assert/strict");
+const { gzipSync } = require("node:zlib");
 const { createApp } = require("../src/app.js");
 const { Sentence } = require("../src/models.js");
 
@@ -87,8 +88,44 @@ test("invalid text, repeated fields, and oversized bodies cannot reach MongoDB",
     method: "POST", headers: { Cookie: cookie, Origin: origin }, body: fields,
   });
   assert.equal(duplicate.status, 400);
-  assert.equal((await submit({ message: "x".repeat(9000) })).status, 413);
+  assert.equal((await submit({ message: "x".repeat(32 * 1024 + 1) })).status, 413);
   assert.equal((await submit({ message: "A valid sentence", email: "bad email" })).status, 400);
+});
+
+test("valid Unicode forms fit the body limit, including maximum optional fields", async (t) => {
+  t.mock.method(Sentence, "find", async () => []);
+  const save = t.mock.method(Sentence.prototype, "save", async function () {
+    return this;
+  });
+  const fName = "漢".repeat(100);
+  const email = `${"é".repeat(240)}@example.test`;
+  for (const message of ["漢".repeat(1000), "漢".repeat(2000), "é".repeat(2000), "😀".repeat(1000)]) {
+    const fields = { message, fName, email };
+    assert.ok(new URLSearchParams({ _csrf: token, ...fields }).toString().length > 8192);
+    const response = await submit(fields, { "X-Forwarded-For": "192.0.2.10" });
+    assert.equal(response.status, 303);
+    const saved = save.mock.calls.at(-1).this;
+    assert.equal(saved.text, message);
+    assert.equal(saved.name, fName);
+    assert.equal(saved.email, email);
+  }
+  assert.equal(save.mock.callCount(), 4);
+});
+
+test("compressed form bodies are rejected before decompression and database access", async (t) => {
+  const find = t.mock.method(Sentence, "find", async () => []);
+  const response = await fetch(baseUrl, {
+    method: "POST",
+    headers: {
+      Cookie: cookie, Origin: origin,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Encoding": "gzip",
+    },
+    body: gzipSync(new URLSearchParams({ _csrf: token, message: "A valid sentence" }).toString()),
+    redirect: "manual",
+  });
+  assert.equal(response.status, 415);
+  assert.equal(find.mock.callCount(), 0);
 });
 
 test("submission limiter returns 429 with a retry interval", async () => {

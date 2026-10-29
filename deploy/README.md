@@ -174,6 +174,13 @@ branch if needed, refuses updates that would discard local commits, and:
 2. Updates Git, builds the image, and replaces only the app container.
 3. Checks container health and the public HTTPS endpoint.
 
+After its backup, the helper holds the database-operation lock through deployment
+and verification. Concurrent backups/restores refuse to run; if another operation
+acquires the lock first, retry the update after it finishes.
+
+The helper replaces only the app. After changing `deploy/Caddyfile`, run
+`scripts/production.sh restart caddy` separately so the proxy settings take effect.
+
 **No database reimport is needed.** Secrets and database volumes persist. Backup
 and replacement each cause a brief interruption. An older checkout needs one
 manual `git pull --ff-only` to receive this helper before first use.

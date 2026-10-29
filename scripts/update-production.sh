@@ -22,6 +22,9 @@ step() {
 cleanup() {
   result=$?
   trap - EXIT
+  if [ "$db_lock_held" = true ]; then
+    rmdir -- "$db_lock_dir"
+  fi
   rmdir -- "$lock_dir"
   if [ "$result" -ne 0 ]; then
     echo "Update stopped. Previous revision: $previous_revision" >&2
@@ -65,6 +68,8 @@ main() {
   previous_revision=$(git rev-parse HEAD)
   lock_dir=$(git rev-parse --git-path silly-stories-deploy.lock)
   mkdir "$lock_dir" 2>/dev/null || die "Another update is running ($lock_dir)."
+  db_lock_dir="$project_root/.db-operation.lock"
+  db_lock_held=false
   trap cleanup EXIT
   trap 'exit 130' INT
   trap 'exit 143' TERM
@@ -86,6 +91,11 @@ main() {
   echo "Updating $branch to $target_revision (previous revision: $previous_revision)."
   step "[3/8] Back up the database"
   "$project_root/scripts/backup-db.sh"
+
+  # The backup releases its lock on exit. Reacquire it before deployment can
+  # restart the app, and keep backups/restores out until verification finishes.
+  mkdir "$db_lock_dir" 2>/dev/null || die "Another database operation is running ($db_lock_dir). Retry after it finishes."
+  db_lock_held=true
 
   step "[4/8] Save the previous app image for rollback"
   previous_image=$(compose images --quiet app)

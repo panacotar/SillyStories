@@ -15,7 +15,8 @@
 	encode zstd gzip
 	header -Server
 	request_body {
-		max_size 8KB
+		# 32 KiB, matching Express's encoded form body limit.
+		max_size 32768
 	}
 	reverse_proxy app:3000
 }
